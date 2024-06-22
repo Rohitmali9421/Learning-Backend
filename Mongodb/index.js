@@ -1,7 +1,7 @@
 const express = require("express");
 const userRouter = require("./routes/User");
 const { connectMongoDB } = require("./connection");
-
+const {logReqRes}=require("./middlerwares")
 const app = express();
 const port = 8000;
 
@@ -10,6 +10,7 @@ connectMongoDB("mongodb://127.0.0.1:27017/mongdb");
 
 // Middlewares
 app.use(express.urlencoded({ extended: false }));
+app.use(logReqRes("log.txt"))
 
 // Routes
 app.use("/users", userRouter);

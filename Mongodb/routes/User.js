@@ -11,4 +11,4 @@ router.get("/", handleGetAllUsers);
 router.post("/", handleCreateUser);
 router.get("/:id", handleGetUserByID);
 
-module.exports = router; // Export the router directly
+module.exports = router;
