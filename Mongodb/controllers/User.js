@@ -1,41 +1,45 @@
+const User = require("../models/user");
 
-const User=require("../models/user") 
+async function handleGetAllUsers(req, res) {
+  try {
+    const users = await User.find({});
+    return res.json(users);
+  } catch (error) {
+    return res.status(500).json({ msg: "Internal Server Error", error: error.message });
+  }
+}
 
-async function handleGetAllUsers(req,res){
-    const users= await User.find({})
-    return res.json(users)
-}
-async function handleGetUserByID(req,res){
-    const id=req.params.id
-    const user=await User.find({_id:id})
-    return res.json(user)
-}
-async function handleCreateUser(req,res){
-    const body = req.body;
-    if (
-      !body ||
-      !body.first_name ||
-      !body.last_name ||
-      !body.gender ||
-      !body.job_title ||
-      !body.email
-    ) {
-      return res.status(400).json({ msg: "all filds are required" });
-    } else {
-      const result = await User.create({
-        first_name: body.first_name,
-        last_name: body.last_name,
-        gender: body.gender,
-        job_title: body.job_title,
-        email: body.email,
-      });
-      return res.status(201).json({ msg: "success" });
+async function handleGetUserByID(req, res) {
+  try {
+    const id = req.params.id;
+    const user = await User.findById(id); // Changed to findById for simplicity
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
     }
+    return res.json(user);
+  } catch (error) {
+    return res.status(500).json({ msg: "Internal Server Error", error: error.message });
+  }
 }
 
+async function handleCreateUser(req, res) {
+  const { first_name, last_name, gender, job_title, email } = req.body;
 
-module.exports={
-    handleGetAllUsers,
-    handleGetUserByID,
-    handleCreateUser,
+  if (!first_name || !last_name || !gender || !job_title || !email) {
+    return res.status(400).json({ msg: "All fields are required" });
+  }
+
+  try {
+    const newUser = new User({ first_name, last_name, gender, job_title, email });
+    await newUser.save();
+    return res.status(201).json({ msg: "User created successfully", user: newUser });
+  } catch (error) {
+    return res.status(500).json({ msg: "Internal Server Error", error: error.message });
+  }
 }
+
+module.exports = {
+  handleGetAllUsers,
+  handleGetUserByID,
+  handleCreateUser,
+};
