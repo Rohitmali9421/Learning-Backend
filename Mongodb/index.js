@@ -1,7 +1,8 @@
 const express = require("express");
-const userRouter = require("./routes/User");
 const { connectMongoDB } = require("./connection");
 const {logReqRes}=require("./middlerwares")
+const userRouter = require("./routes/User");
+
 const app = express();
 const port = 8000;
 
