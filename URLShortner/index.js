@@ -3,6 +3,7 @@ const path = require("path");
 const { connectMongoDB } = require("./connection");
 const router = require("./Routes/url");
 const staticrouter = require("./Routes/staticRouter");
+const userRoute = require("./Routes/User");
 const URL = require("./Models/url");
 //server
 const app = express();
@@ -23,6 +24,7 @@ app.use(express.urlencoded({extended:false}));
 
 //Router
 app.use("/url", router);
+app.use("/user", userRoute);
 app.use("/", staticrouter);
 app.get("/url/:shortID", async (req, res) => {
   const shortID = req.params.shortID;
