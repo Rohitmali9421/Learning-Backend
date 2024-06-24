@@ -1,10 +1,16 @@
 const express = require("express");
+const path = require("path");
 const { connectMongoDB } = require("./connection");
 const router = require("./Routes/url");
+const staticrouter = require("./Routes/staticRouter");
 const URL = require("./Models/url");
 //server
 const app = express();
 const port = 8000;
+
+//views
+app.set("view engine","ejs")
+app.set("views ",path.resolve("./views"))
 
 //connection
 connectMongoDB("mongodb://127.0.0.1:27017/shortURL").then(() => {
@@ -13,16 +19,18 @@ connectMongoDB("mongodb://127.0.0.1:27017/shortURL").then(() => {
 
 //middlewares
 app.use(express.json());
+app.use(express.urlencoded({extended:false}));
 
 //Router
 app.use("/url", router);
-app.get("/:shortID", async (req, res) => {
+app.use("/", staticrouter);
+app.get("/url/:shortID", async (req, res) => {
   const shortID = req.params.shortID;
   const entry = await URL.findOneAndUpdate(
     { shortId: shortID },
     { $push: { visitHistory: { timestamps: Date.now() } } }
   );
-  console.log(entry)
+
   res.redirect(entry.redirectURL);
 });
 
